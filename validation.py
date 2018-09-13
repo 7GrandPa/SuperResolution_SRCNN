@@ -9,6 +9,7 @@ import scipy.misc
 from SRNet import SRnet
 from Image_Set import Image_set
 from PIL import Image
+import argparse
 # def train solver class.
 class Solver(object):
     def __init__(self, net):
@@ -59,8 +60,17 @@ class Solver(object):
         return psnr
 
 def main():
-    data = Image_set('test')
-    net = SRnet('test')
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_path', default=r'g:\Jupyter\ImagePro\Code\Super_Resolution\Test\Set5',type=str)
+    parser.add_argument('--phase', default=r'test',type=str)
+    args = parser.parse_args()
+    print(args.data_path)
+    print(args.phase)
+    #args.test_path
+    
+    data = Image_set(args.data_path, args.phase)
+    net = SRnet(args.phase)
     solver = Solver(net)
     
     inf_img_orig, inf_img_blur = data.get_sub_images(2)

@@ -9,11 +9,12 @@ import psutil
 #import scipy.
 
 class Image_set(object):
-    def __init__(self, phase='train', scale_factor=2):
+    def __init__(self, data_path, phase='train', scale_factor=2):
         self.train_image_path = r'g:/Jupyter/ImagePro/Code/Super_Resolution/Train/'
         #self.test_image_path = r'g:/Jupyter/ImagePro/Code/Super_Resolution/Test/'
         self.test_set_5_path = r'g:\Jupyter\ImagePro\Code\Super_Resolution\Test\Set5'
         self.test_set_14_path = r'g:\Jupyter\ImagePro\Code\Super_Resolution\Test\Set14'
+        self.data_path = data_path
         self.cache_path = r'g:/Jupyter/ImagePro/Code/Super_Resolution/Cache'
         self.phase = phase
         self.strides = 14
@@ -118,7 +119,7 @@ class Image_set(object):
                 print('gen done')
             else:
                 print('Start generate sub_images from test images.')
-                sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.test_set_14_path)            
+                sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.data_path)            
                 
                 print('Gen sub_images successfully, and save it to cache...')
                 if os.path.exists(self.cache_path):
