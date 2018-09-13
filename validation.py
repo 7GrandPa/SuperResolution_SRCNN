@@ -2,14 +2,15 @@ import tensorflow as tf
 import numpy as np
 import os
 #import matplotlib.image as mimg
-import cv2
-import matplotlib.pyplot as plt
+#import cv2
+#import matplotlib.pyplot as plt
 import time
 import scipy.misc
 from SRNet import SRnet
 from Image_Set import Image_set
 from PIL import Image
 import argparse
+import shutil
 # def train solver class.
 class Solver(object):
     def __init__(self, net):
@@ -63,29 +64,23 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', default=r'g:\Jupyter\ImagePro\Code\Super_Resolution\Test\Set5',type=str)
-    parser.add_argument('--phase', default=r'test',type=str)
+    parser.add_argument('--phase', default='test',type=str)
     args = parser.parse_args()
-    print(args.data_path)
-    print(args.phase)
+    data_path = args.data_path
+    phase = args.phase
     #args.test_path
     
-    data = Image_set(args.data_path, args.phase)
-    net = SRnet(args.phase)
+    data = Image_set(data_path, phase)
+    net = SRnet(phase)
     solver = Solver(net)
     
     inf_img_orig, inf_img_blur = data.get_sub_images(2)
     print(len(inf_img_blur))
     #print(inf_img_blur.shape)
     print('Start evaluating...')
+    if phase == 'test' and os.path.exists('g:/Jupyter/ImagePro/Code/Super_Resolution/outTest/'):
+        shutil.rmtree('g:/Jupyter/ImagePro/Code/Super_Resolution/outTest/')
     
-    #test_img = Image.open(r'timg.jpg')
-    #test_img = np.array(test_img)
-    #test_img = np.expand_dims(test_img, axis=0)
-    #test_gen = solver.inference(test_img)
-    
-    #scipy.misc.imsave('timg_post.png', test_gen[0])
-    
-    #print(inf_img_blur[0].shape)
     for i in range(len(inf_img_blur)):
         
         with tf.Session() as sess:
@@ -93,11 +88,21 @@ def main():
             inf_img_bb = sess.run(tf.image.resize_bicubic(
                 np.expand_dims(inf_img_blur[i], axis=0), [inf_img_blur[i].shape[0]*2, inf_img_blur[i].shape[1]*2]))
             print(inf_img_bb.shape)
-
+            
             gen_img = np.array(solver.inference(inf_img_bb), np.uint8)
-            scipy.misc.imsave('g:/Jupyter/ImagePro/Code/Super_Resolution/Test_output/%d_orig.png' % i, inf_img_orig[i])
-            scipy.misc.imsave('g:/Jupyter/ImagePro/Code/Super_Resolution/Test_output/%d_post.png' % i, gen_img[0])
-            scipy.misc.imsave('g:/Jupyter/ImagePro/Code/Super_Resolution/Test_output/%d_before.png' % i, inf_img_bb[0])
+            
+            if phase == 'validation' and data_path.endswith('5'):
+                output_dir = 'outSet5'
+            elif phase == 'validation' and data_path.endswith('14'):
+                output_dir = 'outSet14'
+            else:
+                output_dir = 'outTest'
+                if not os.path.exists('g:/Jupyter/ImagePro/Code/Super_Resolution/'+ output_dir+'/'):
+                    os.mkdir('g:/Jupyter/ImagePro/Code/Super_Resolution/'+ output_dir+'/')
+
+            scipy.misc.imsave('g:/Jupyter/ImagePro/Code/Super_Resolution/'+ output_dir+'/%d_orig.png' % i, inf_img_orig[i])
+            scipy.misc.imsave('g:/Jupyter/ImagePro/Code/Super_Resolution/'+ output_dir+'/%d_post.png' % i, gen_img[0])
+            scipy.misc.imsave('g:/Jupyter/ImagePro/Code/Super_Resolution/'+ output_dir+'/%d_before.png' % i, inf_img_bb[0])
             try:
                 print(solver.PSNR(inf_img_orig[i], gen_img[0]))
             except:

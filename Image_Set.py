@@ -65,7 +65,7 @@ class Image_set(object):
             else:
                 
                 print('Start generate sub_images from train images.')
-                sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.train_image_path)
+                sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.data_path)
                 #sub_images32_Y, sub_images33_Y = self.
                 
                 print('Gen sub_images successfully, and save it to cache...')
@@ -94,58 +94,133 @@ class Image_set(object):
                     return sub_images33_X, sub_images33_Y_3
                 #return sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3
             
-        else:# for self.phase == 'test'
-            test_cache_file32_X = self.cache_path+r'\sub_images_'+str(self.image_size)+'_'+self.phase+'X'+'.npy'
-            test_cache_file33_X = self.cache_path+r'\sub_images_'+str(self.image_size2)+'_'+self.phase+'X'+'.npy'
-            test_cache_file32_Y_2 = self.cache_path+r'\sub_images_'+str(self.image_size)+'_'+self.phase+'Y2'+'.npy'
-            test_cache_file32_Y_4 = self.cache_path+r'\sub_images_'+str(self.image_size)+'_'+self.phase+'Y4'+'.npy'
-            test_cache_file33_Y_3 = self.cache_path+r'\sub_images_'+str(self.image_size2)+'_'+self.phase+'Y3'+'.npy'            
-            if os.path.exists(test_cache_file32_X):
-                print('gen image from test set')
-                if factor == 2:
-                    ret_orig_img = np.load(test_cache_file32_X)
-                    ret_down_img = np.load(test_cache_file32_Y_2)
-                    return ret_orig_img, ret_down_img
-                elif factor == 3:
-                    ret_orig_img = np.load(test_cache_file33_X)
-                    ret_down_img = np.load(test_cache_file33_Y_3)
-                    return ret_orig_img, ret_down_img
-                elif factor == 4:
-                    ret_orig_img = np.load(test_cache_file32_X)
-                    ret_down_img = np.load(test_cache_file32_Y_4)
-                    return ret_orig_img, ret_down_img
-                else:
-                    print('pls enter correct factor')
-                print('gen done')
-            else:
-                print('Start generate sub_images from test images.')
-                sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.data_path)            
+        elif self.phase == 'validation':# for self.phase == 'Validation'
+            if self.data_path.endswith('5'):
+                test_cache_file32_X = self.cache_path+r'\vali_images_Set5_'+str(self.image_size)+'_'+self.phase+'X'+'.npy'
+                test_cache_file33_X = self.cache_path+r'\vali_images_Set5_'+str(self.image_size2)+'_'+self.phase+'X'+'.npy'
+                test_cache_file32_Y_2 = self.cache_path+r'\vali_images_Set5_'+str(self.image_size)+'_'+self.phase+'Y2'+'.npy'
+                test_cache_file32_Y_4 = self.cache_path+r'\vali_images_Set5_'+str(self.image_size)+'_'+self.phase+'Y4'+'.npy'
+                test_cache_file33_Y_3 = self.cache_path+r'\vali_images_Set5_'+str(self.image_size2)+'_'+self.phase+'Y3'+'.npy'            
+                if os.path.exists(test_cache_file32_X):
+                    print('Get image data from validation set5')
+                    if factor == 2:
+                        ret_orig_img = np.load(test_cache_file32_X)
+                        ret_down_img = np.load(test_cache_file32_Y_2)
+                        return ret_orig_img, ret_down_img
+                    elif factor == 3:
+                        ret_orig_img = np.load(test_cache_file33_X)
+                        ret_down_img = np.load(test_cache_file33_Y_3)
+                        return ret_orig_img, ret_down_img
+                    elif factor == 4:
+                        ret_orig_img = np.load(test_cache_file32_X)
+                        ret_down_img = np.load(test_cache_file32_Y_4)
+                        return ret_orig_img, ret_down_img
+                    else:
+                        print('pls enter correct factor')
+                    print('Get image data from local file done!')
                 
-                print('Gen sub_images successfully, and save it to cache...')
-                if os.path.exists(self.cache_path):
-                    np.save(test_cache_file32_X, sub_images32_X)
-                    np.save(test_cache_file32_Y_2, sub_images32_Y_2)
-                    np.save(test_cache_file32_Y_4, sub_images32_Y_4)
-                    np.save(test_cache_file33_X, sub_images33_X)
-                    np.save(test_cache_file33_Y_3, sub_images33_Y_3)
-
-                    print('Cache saved.')
-                else:
-                    print('creating cache dirs, and save data to cache...')
-                    os.mkdir(self.cache_path)                    
-                    np.save(test_cache_file32_X, sub_images32_X)
-                    np.save(test_cache_file32_Y_2, sub_images32_Y_2)
-                    np.save(test_cache_file32_Y_4, sub_images32_Y_4)
-                    np.save(test_cache_file33_X, sub_images33_X)
-                    np.save(test_cache_file33_Y_3, sub_images33_Y_3)
-                    print('Cache saved.')
-                if factor == 2:
-                    return sub_images32_X, sub_images32_Y_2
-                if factor == 4:
-                    return sub_images32_X, sub_images32_Y_4
-                if factor == 3:
-                    return sub_images33_X, sub_images33_Y_3
+                else:# not exist.
+                    print('Start generate validation images from: '+self.data_path)
+                    sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.data_path)            
+                    
+                    print('Gen validation images successfully, and save it to cache...')
+                    if os.path.exists(self.cache_path):
+                        np.save(test_cache_file32_X, sub_images32_X)
+                        np.save(test_cache_file32_Y_2, sub_images32_Y_2)
+                        np.save(test_cache_file32_Y_4, sub_images32_Y_4)
+                        np.save(test_cache_file33_X, sub_images33_X)
+                        np.save(test_cache_file33_Y_3, sub_images33_Y_3)
+    
+                        print('Cache saved.')
+                    else:
+                        print('creating cache dirs, and save data to cache...')
+                        os.mkdir(self.cache_path)                    
+                        np.save(test_cache_file32_X, sub_images32_X)
+                        np.save(test_cache_file32_Y_2, sub_images32_Y_2)
+                        np.save(test_cache_file32_Y_4, sub_images32_Y_4)
+                        np.save(test_cache_file33_X, sub_images33_X)
+                        np.save(test_cache_file33_Y_3, sub_images33_Y_3)
+                        print('Cache saved.')
+                    if factor == 2:
+                        return sub_images32_X, sub_images32_Y_2
+                    if factor == 4:
+                        return sub_images32_X, sub_images32_Y_4
+                    if factor == 3:
+                        return sub_images33_X, sub_images33_Y_3
                 
+            if self.data_path.endswith('14'):
+                test_cache_file32_X = self.cache_path+r'\vali_images_Set14_'+str(self.image_size)+'_'+self.phase+'X'+'.npy'
+                test_cache_file33_X = self.cache_path+r'\vali_images_Set14_'+str(self.image_size2)+'_'+self.phase+'X'+'.npy'
+                test_cache_file32_Y_2 = self.cache_path+r'\vali_images_Set14_'+str(self.image_size)+'_'+self.phase+'Y2'+'.npy'
+                test_cache_file32_Y_4 = self.cache_path+r'\vali_images_Set14_'+str(self.image_size)+'_'+self.phase+'Y4'+'.npy'
+                test_cache_file33_Y_3 = self.cache_path+r'\vali_images_Set14_'+str(self.image_size2)+'_'+self.phase+'Y3'+'.npy'            
+                if os.path.exists(test_cache_file32_X):
+                    print('Get image data from validation set14')
+                    if factor == 2:
+                        ret_orig_img = np.load(test_cache_file32_X)
+                        ret_down_img = np.load(test_cache_file32_Y_2)
+                        return ret_orig_img, ret_down_img
+                    elif factor == 3:
+                        ret_orig_img = np.load(test_cache_file33_X)
+                        ret_down_img = np.load(test_cache_file33_Y_3)
+                        return ret_orig_img, ret_down_img
+                    elif factor == 4:
+                        ret_orig_img = np.load(test_cache_file32_X)
+                        ret_down_img = np.load(test_cache_file32_Y_4)
+                        return ret_orig_img, ret_down_img
+                    else:
+                        print('pls enter correct factor')
+                    print('Get image data from local file done!')                    
+                else:
+                    print('Start generate validation images from: '+self.data_path)
+                    sub_images32_X, sub_images32_Y_2, sub_images32_Y_4, sub_images33_X, sub_images33_Y_3 = self.gen_train_sub_images(self.data_path)            
+                    
+                    print('Gen sub_images successfully, and save it to cache...')
+                    if os.path.exists(self.cache_path):
+                        np.save(test_cache_file32_X, sub_images32_X)
+                        np.save(test_cache_file32_Y_2, sub_images32_Y_2)
+                        np.save(test_cache_file32_Y_4, sub_images32_Y_4)
+                        np.save(test_cache_file33_X, sub_images33_X)
+                        np.save(test_cache_file33_Y_3, sub_images33_Y_3)
+    
+                        print('Cache saved.')
+                    else:
+                        print('creating cache dirs, and save data to cache...')
+                        os.mkdir(self.cache_path)                    
+                        np.save(test_cache_file32_X, sub_images32_X)
+                        np.save(test_cache_file32_Y_2, sub_images32_Y_2)
+                        np.save(test_cache_file32_Y_4, sub_images32_Y_4)
+                        np.save(test_cache_file33_X, sub_images33_X)
+                        np.save(test_cache_file33_Y_3, sub_images33_Y_3)
+                        print('Cache saved.')
+                    if factor == 2:
+                        return sub_images32_X, sub_images32_Y_2
+                    if factor == 4:
+                        return sub_images32_X, sub_images32_Y_4
+                    if factor == 3:
+                        return sub_images33_X, sub_images33_Y_3
+        
+        else: # for self.phase == 'test'
+            sub_images32_X = []
+        
+            file_list = os.listdir(self.data_path)
+            for f in file_list:
+                
+                img = Image.open(self.data_path+'/'+f)
+                temp_img = np.array(img)
+                if len(temp_img.shape) == 2:
+                    temp_img = temp_img.reshape((temp_img.shape[0], temp_img.shape[1], 1))                
+                sub_images32_X.append(temp_img)
+            sub_images33_X = sub_images32_X
+            sub_images32_Y_2 = sub_images32_X
+            sub_images32_Y_4 = sub_images32_X
+            sub_images33_Y_3 = sub_images32_X  
+            if factor == 2:
+                return sub_images32_X, sub_images32_Y_2
+            if factor == 4:
+                return sub_images32_X, sub_images32_Y_4
+            if factor == 3:
+                return sub_images33_X, sub_images33_Y_3            
     def gen_train_sub_images(self, gen_files_path):
         '''
         '''
@@ -165,7 +240,7 @@ class Image_set(object):
 
             # gen orig_size images
             
-            if self.phase == 'test':
+            if self.phase == 'validation':
                 sub_images32_X.append(temp_img)
                 sub_images33_X = sub_images32_X
                 
